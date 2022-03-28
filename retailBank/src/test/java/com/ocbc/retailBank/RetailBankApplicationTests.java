@@ -6,6 +6,8 @@ import com.ocbc.repository.UserRepository;
 import com.ocbc.service.LoginService;
 import com.ocbc.service.PaymentService;
 import com.ocbc.service.TopUpService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,9 @@ import java.util.stream.Collectors;
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RetailBankApplicationTests {
+
+    private static final Logger logger = LogManager.getLogger(RetailBankApplicationTests.class);
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -39,7 +44,7 @@ class RetailBankApplicationTests {
     public List<User> getUsers(){
         List<User> UserList = this.userController.getUsers();
         if(UserList.isEmpty()){
-            System.out.println("Database is Empty");
+            logger.info("Database is Empty");
             return null;
         }
             return UserList;
@@ -55,16 +60,16 @@ class RetailBankApplicationTests {
     }
 
     public void printLoginDetails(User user){
-        System.out.println("Hello, "+user.getFirstName()+"!");
+        logger.info("Hello, "+user.getFirstName()+"!");
         if(StringUtils.isNotBlank(user.getOweDebtFrom())){
             List<User> UserList = getUsers();
             User owedUser = findUser(user.getOweDebtFrom(),UserList);
               double pendingAmount = owedUser.getDebtBalance();
-            System.out.println("Owing "+pendingAmount+" from " + user.getOweDebtFrom());
+            logger.info("Owing "+pendingAmount+" from " + user.getOweDebtFrom());
         }
-        System.out.println("Your balance is, "+user.getBalance()+".");
+        logger.info("Your balance is, "+user.getBalance()+".");
         if(user.getDebtBalance() > 0){
-            System.out.println("Owing "+user.getDebtBalance()+" to " + user.getPayDebtTo());
+            logger.info("Owing "+user.getDebtBalance()+" to " + user.getPayDebtTo());
         }
     }
 
@@ -73,11 +78,11 @@ class RetailBankApplicationTests {
             List<User> UserList = getUsers();
             User owedUser = findUser(user.getOweDebtFrom(),UserList);
             double pendingAmount = owedUser.getDebtBalance();
-            System.out.println("Owing "+pendingAmount+" from " + user.getOweDebtFrom());
+            logger.info("Owing "+pendingAmount+" from " + user.getOweDebtFrom());
         }
-        System.out.println("Your balance is, "+user.getBalance()+".");
+        logger.info("Your balance is, "+user.getBalance()+".");
         if(user.getDebtBalance() > 0){
-            System.out.println("Owing "+user.getDebtBalance()+" to " + user.getPayDebtTo());
+            logger.info("Owing "+user.getDebtBalance()+" to " + user.getPayDebtTo());
         }
     }
 
@@ -146,7 +151,6 @@ class RetailBankApplicationTests {
     @Order(7)
     public void topUpBob_30() throws IOException {
         this.topUpService.topUpBalance("Bob",30);
-        //System.out.println("Transferred 30 to Alice.");
         List<User> userList  = getUsers();
         User user = findUser("Bob", userList);
         printBalanceAmount(user);
@@ -200,6 +204,6 @@ class RetailBankApplicationTests {
     @Order(12)
     public void topUpBob_amount1() throws IOException {
         String ouptput =this.topUpService.topUpBalance("Bo1b",100);
-        System.out.println(ouptput);
+        logger.info(ouptput);
     }
 }
