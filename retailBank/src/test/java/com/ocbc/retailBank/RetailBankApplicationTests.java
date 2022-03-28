@@ -3,6 +3,9 @@ package com.ocbc.retailBank;
 import com.ocbc.controller.UserController;
 import com.ocbc.model.User;
 import com.ocbc.repository.UserRepository;
+import com.ocbc.service.LoginService;
+import com.ocbc.service.PaymentService;
+import com.ocbc.service.TopUpService;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -22,6 +25,15 @@ class RetailBankApplicationTests {
     private UserRepository userRepository;
     @Autowired
     private UserController userController;
+
+    @Autowired
+    PaymentService paymentService;
+
+    @Autowired
+    TopUpService topUpService;
+
+    @Autowired
+    LoginService loginService;
 
     //Get List of Users from the Database
     public List<User> getUsers(){
@@ -75,7 +87,7 @@ class RetailBankApplicationTests {
 
         List<User> userList = getUsers();
         // Create User Alice if not present
-        this.userController.userLogin("Alice");
+        this.loginService.login("Alice");
         userList = getUsers();
         User createdUser = findUser("Alice", userList);
         printLoginDetails(createdUser);
@@ -85,7 +97,7 @@ class RetailBankApplicationTests {
     @Test
     @Order(2)
     public void setInitialAmountToAlice() throws IOException {
-        this.userController.userTopUp("Alice",100);
+        this.topUpService.topUpBalance("Alice",100);
         List<User> userList  = getUsers();
         User user = findUser("Alice", userList);
         printBalanceAmount(user);
@@ -96,7 +108,7 @@ class RetailBankApplicationTests {
     public void createUserBob() throws IOException {
         List<User> userList = getUsers();
         // Create User Alice if not present
-        this.userController.userLogin("Bob");
+        this.loginService.login("Bob");
         userList = getUsers();
         User createdUser = findUser("Bob", userList);
         printLoginDetails(createdUser);
@@ -106,7 +118,7 @@ class RetailBankApplicationTests {
     @Test
     @Order(4)
     public void setInitialAmountToBob() throws IOException {
-        this.userController.userTopUp("Bob",80);
+        this.topUpService.topUpBalance("Bob",80);
         List<User> userList  = getUsers();
         User user = findUser("Bob", userList);
         printBalanceAmount(user);
@@ -115,7 +127,7 @@ class RetailBankApplicationTests {
     @Test
     @Order(5)
     public void sendPaymentToAlice_FromBob() throws IOException {
-        this.userController.transfer("Bob",50,"Alice");
+        paymentService.transfer("Bob",50,"Alice");
         List<User> userList  = getUsers();
         User user = findUser("Bob", userList);
         printBalanceAmount(user);
@@ -124,7 +136,7 @@ class RetailBankApplicationTests {
     @Test
     @Order(6)
     public void sendPaymentToAlice_FromBob1() throws IOException {
-        this.userController.transfer("Bob",100,"Alice");
+        paymentService.transfer("Bob",100,"Alice");
         List<User> userList  = getUsers();
         User user = findUser("Bob", userList);
         printBalanceAmount(user);
@@ -133,7 +145,7 @@ class RetailBankApplicationTests {
     @Test
     @Order(7)
     public void topUpBob_30() throws IOException {
-        this.userController.userTopUp("Bob",30);
+        this.topUpService.topUpBalance("Bob",30);
         //System.out.println("Transferred 30 to Alice.");
         List<User> userList  = getUsers();
         User user = findUser("Bob", userList);
@@ -146,7 +158,7 @@ class RetailBankApplicationTests {
 
         List<User> userList = getUsers();
         // Create User Alice if not present
-        this.userController.userLogin("Alice");
+        this.loginService.login("Alice");
         userList = getUsers();
         User createdUser = findUser("Alice", userList);
         printLoginDetails(createdUser);
@@ -156,7 +168,7 @@ class RetailBankApplicationTests {
     @Test
     @Order(9)
     public void sendPaymentToBob_FromAlice() throws IOException {
-        this.userController.transfer("Alice",30,"Bob");
+        paymentService.transfer("Alice",30,"Bob");
         List<User> userList  = getUsers();
         User user = findUser("Alice", userList);
         printBalanceAmount(user);
@@ -168,7 +180,7 @@ class RetailBankApplicationTests {
     public void loginBob() throws IOException {
         List<User> userList = getUsers();
         // Create User Alice if not present
-        this.userController.userLogin("Bob");
+        this.loginService.login("Bob");
         userList = getUsers();
         User createdUser = findUser("Bob", userList);
         printLoginDetails(createdUser);
@@ -178,7 +190,7 @@ class RetailBankApplicationTests {
     @Test
     @Order(11)
     public void topUpBob_amount() throws IOException {
-        this.userController.userTopUp("Bob",100);
+        this.topUpService.topUpBalance("Bob",100);
         List<User> userList  = getUsers();
         User user = findUser("Bob", userList);
         printBalanceAmount(user);
@@ -187,7 +199,7 @@ class RetailBankApplicationTests {
     @Test
     @Order(12)
     public void topUpBob_amount1() throws IOException {
-        String ouptput =this.userController.userTopUp("Bo1b",100);
+        String ouptput =this.topUpService.topUpBalance("Bo1b",100);
         System.out.println(ouptput);
     }
 }
